@@ -1,0 +1,76 @@
+# Полный стек: ML-сервис + мониторинг (для проверки метрик в Grafana)
+# Запуск: docker compose -f docker-compose.full.yaml up -d
+# ML-сервис: http://localhost:8003
+# Prometheus: http://localhost:9090
+# Grafana: http://localhost:3000 (admin/admin)
+
+name: dataops-final-full
+
+services:
+  ml-service-db:
+    image: postgres:15-alpine
+    container_name: ml-service-db-full
+    environment:
+      POSTGRES_USER: ml_service
+      POSTGRES_PASSWORD: ml_service_password
+      POSTGRES_DB: ml_service
+    volumes:
+      - ml_service_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ml_service -d ml_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ml-service:
+    build: ./ml-service
+    container_name: ml-service-full
+    ports:
+      - "8003:8000"
+    environment:
+      ML_SERVICE_DB_URL: postgresql://ml_service:ml_service_password@ml-service-db:5432/ml_service
+    depends_on:
+      ml-service-db:
+        condition: service_healthy
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: prometheus-full
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.full.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: grafana-full
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  ml_service_postgres_data:
+  prometheus_data:
+  grafana_data:
