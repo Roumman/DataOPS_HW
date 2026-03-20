@@ -1,0 +1,41 @@
+{
+  "dashboard": {
+    "title": "ML Service Metrics",
+    "panels": [
+      {
+        "title": "Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(ml_service_requests_total[5m])",
+            "legendFormat": "{{method}} {{endpoint}}"
+          }
+        ]
+      },
+      {
+        "title": "Prediction Count",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(ml_service_predictions_total[1h])",
+            "legendFormat": "Predictions"
+          }
+        ]
+      },
+      {
+        "title": "Request Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(ml_service_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "p95"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(ml_service_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "p50"
+          }
+        ]
+      }
+    ]
+  }
+}
