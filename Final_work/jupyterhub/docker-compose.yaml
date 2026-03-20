@@ -1,0 +1,17 @@
+name: jupyterhub-final
+
+services:
+  jupyterhub:
+    build: .
+    container_name: jupyterhub-final
+    ports:
+      - "8002:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py:ro
+      - jupyterhub_data:/srv/jupyterhub
+    restart: unless-stopped
+
+volumes:
+  jupyterhub_data:
