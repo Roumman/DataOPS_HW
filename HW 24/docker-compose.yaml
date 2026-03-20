@@ -1,0 +1,9 @@
+name: ml-service-hw24
+
+services:
+  ml-service:
+    build: .
+    container_name: diabetes-ml-service
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
