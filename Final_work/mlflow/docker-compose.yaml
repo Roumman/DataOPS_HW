@@ -1,0 +1,42 @@
+name: mlflow-final
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: mlflow-db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - mlflow_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mlflow:
+    build: .
+    container_name: mlflow-server
+    ports:
+      - "5001:5000"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - mlflow_artifacts:/mlflow/artifacts
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mlflow_postgres_data:
+  mlflow_artifacts:
