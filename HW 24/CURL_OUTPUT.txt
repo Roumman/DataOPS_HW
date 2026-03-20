@@ -1,0 +1,42 @@
+
+Текстовый вывод вызовов ручки /api/v1/predict (curl)
+====================================================
+
+Вызов 1:
+$ curl -X POST http://localhost:8000/api/v1/predict \
+  -H "Content-Type: application/json" \
+  -d '{"age": 0.04, "sex": 0.05, "bmi": 0.06, "bp": 0.07, "s1": 0.08, "s2": 0.09, "s3": 0.1, "s4": 0.11, "s5": 0.12, "s6": 0.13}'
+
+{"predict":99.63}
+
+
+Вызов 2:
+$ curl -X POST http://localhost:8000/api/v1/predict \
+  -H "Content-Type: application/json" \
+  -d '{"age": -0.1, "sex": -0.05, "bmi": 0.0, "bp": 0.02, "s1": -0.01, "s2": 0.03, "s3": 0.04, "s4": -0.02, "s5": 0.01, "s6": 0.0}'
+
+{"predict":99.63}
+
+
+Вызов 3:
+$ curl -X POST http://localhost:8000/api/v1/predict \
+  -H "Content-Type: application/json" \
+  -d '{"age": 0.15, "sex": 0.1, "bmi": 0.2, "bp": 0.18, "s1": 0.12, "s2": 0.14, "s3": 0.16, "s4": 0.1, "s5": 0.2, "s6": 0.15}'
+
+{"predict":99.63}
+
+
+Вызов 4 (сырые значения пациента 1):
+$ curl -X POST http://localhost:8000/api/v1/predict \
+  -H "Content-Type: application/json" \
+  -d '{"age": 50, "sex": 1, "bmi": 25, "bp": 90, "s1": 200, "s2": 120, "s3": 50, "s4": 4, "s5": 5, "s6": 100}'
+
+{"predict":177.0}
+
+
+Вызов 5 (сырые значения пациента 2):
+$ curl -X POST http://localhost:8000/api/v1/predict \
+  -H "Content-Type: application/json" \
+  -d '{"age": 30, "sex": 0, "bmi": 22, "bp": 80, "s1": 180, "s2": 100, "s3": 60, "s4": 3, "s5": 4.5, "s6": 90}'
+
+{"predict":91.96}
