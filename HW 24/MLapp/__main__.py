@@ -1,0 +1,10 @@
+"""Точка входа для запуска ML сервиса."""
+import uvicorn
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "mlapp.server:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=False,
+    )
